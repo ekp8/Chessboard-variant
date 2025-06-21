@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Chessboard.js Test</title>
+
+  <!-- chessboard.css (local or CDN) -->
+  <link rel="stylesheet" href="chessboard.css" />
+  <!-- or use CDN -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/css/chessboard-1.0.0.min.css" /> -->
+
+  <style>
+   #board {
+    width: 500px; /* 10 columns × 50px per square */
+    margin: 20px auto;
+}
+
+  #flipBtn {
+      position: absolute;
+      right: 40px;
+      top: 40px;
+      z-index: 10;
+    }
+
+  body {
+    position: relative;
+  }
+    
+  </style>
+</head>
+<body>
+
+  <div id="board"></div>
+
+  <!-- Load jQuery FIRST -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- Load chessboard.js AFTER jQuery -->
+  <script src="chessboard_1.js"></script>
+  <!-- or use CDN -->
+  <!-- <script src="https://unpkg.com/chessboardjs@1.0.0/js/chessboard-1.0.0.min.js"></script> -->
+
+  <script>
+    var board = Chessboard('board', {
+      position: 'start',
+      draggable: true,
+      dropOffBoard: 'snapback',
+      sparePieces: false
+    });
+  </script>
+
+  <button id="flipBtn">Flip Board</button>
+  <script>
+    var board = Chessboard('board', {
+      position: 'start',
+      draggable: true,
+      dropOffBoard: 'snapback',
+      sparePieces: false
+    });
+
+    document.getElementById('flipBtn').onclick = function() {
+      board.flip();
+    };
+  </script>
+
+</body>
+</html>
