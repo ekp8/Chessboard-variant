@@ -36,19 +36,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Load chessboard.js AFTER jQuery -->
-  <script src="chessboard_1.js"></script>
+  <script src="chessboard_2.js"></script>
   <!-- or use CDN -->
   <!-- <script src="https://unpkg.com/chessboardjs@1.0.0/js/chessboard-1.0.0.min.js"></script> -->
 
-  <script>
-    var board = Chessboard('board', {
-      position: 'start',
-      draggable: true,
-      dropOffBoard: 'snapback',
-      sparePieces: false
-    });
-  </script>
 
+
+
+  
   <button id="flipBtn">Flip Board</button>
   <script>
     var board = Chessboard('board', {
@@ -61,7 +56,6 @@
     document.getElementById('flipBtn').onclick = function() {
       board.flip();
     };
-  </script>
-
+</script>
 </body>
 </html>
