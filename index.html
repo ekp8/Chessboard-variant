@@ -100,6 +100,11 @@
   }
 }
 
+
+.square-55d63.last-move {
+  box-shadow: 0 0 0 3px #c5a8c0 inset !important;
+} /*highlights last move*/
+
   </style>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -118,6 +123,19 @@
 
 
   <div id="board"></div>
+
+  <!-- promotion dialog -->
+  <div id="promotion-dialog" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; display:flex; align-items:center; justify-content:center;">
+  <div style="position:relative; background:#fff; padding:20px; border-radius:8px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+    <button id="close-promotion-dialog" style="position:absolute; top:5px; right:8px; background:none; border:none; font-size:1.5em; cursor:pointer;">&times;</button>
+    <button class="promote-btn" data-piece="q">Queen</button>
+    <button class="promote-btn" data-piece="r">Rook</button>
+    <button class="promote-btn" data-piece="b">Bishop</button>
+    <button class="promote-btn" data-piece="n">Knight</button>
+    <button class="promote-btn" data-piece="h">Sentinel</button>
+    <button class="promote-btn" data-piece="l">Berserker</button>
+  </div>
+</div>
 
   <!-- Load jQuery FIRST -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -143,6 +161,25 @@
       return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       }
 
+    let tapSource = null;
+    let pendingPromotion = null;
+    let lastMoveSquares = [];
+
+    $('#promotion-dialog').hide();
+
+
+    // Highlight the last move squares
+    function highlightLastMove(from, to) {
+  // Remove previous highlights
+  $('.square-55d63').removeClass('last-move');
+  if (from && to) {
+    $(`[data-square="${from}"]`).addClass('last-move');
+    $(`[data-square="${to}"]`).addClass('last-move');
+    lastMoveSquares = [from, to];
+  }
+}
+
+
      // ...existing code...
     var moveHistory = [];
     var board = Chessboard('board', {
@@ -160,7 +197,7 @@
     });
 
 
-
+// 9rows NOT IMPLEMENTED YET
    document.getElementById('modeSelect').addEventListener('change', function() {
   if (this.value === 'standard') {
     board.position('rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1', true);
@@ -186,37 +223,82 @@
 });
 
 
-    //tap to move handler
-       let tapSource = null;
+  
+// tap to move handler 
+$('#board').on('pointerup', '[data-square]', function(e) {
+  const square = $(this).data('square');
+  if (!tapSource) {
+    // Remove previous highlights before highlighting the new tap
+    $('[data-square]').removeClass('highlight');
+    tapSource = square;
+    $(this).addClass('highlight');
+  } else {
+    let pos = board.position();
+    if (tapSource !== square && pos[tapSource]) {
+      // Check for pawn promotion
+      let piece = pos[tapSource];
+      let isWhite = piece && piece[0] === 'w';
+      let isBlack = piece && piece[0] === 'b';
+      let isPawn = piece && piece[1] === 'P';
+      let promoteRank = (isWhite && square.match(/8|9/)) || (isBlack && square.match(/1/));
+      if (isPawn && promoteRank) {
+        pendingPromotion = { from: tapSource, to: square, color: piece[0] };
+        $('#promotion-dialog').css('display', 'flex');
+      } else {
+        moveHistory.push(Chessboard.objToFen(pos));
+        pos[square] = pos[tapSource];
+        delete pos[tapSource];
+        board.position(pos, true);
+        highlightLastMove(tapSource, square); // <-- show last move highlight
+      }
+    }
+    // Always remove yellow highlight after a move attempt
+    $('[data-square]').removeClass('highlight');
+    tapSource = null;
+  }
+});
 
-      $('#board').on('pointerup', '[data-square]', function(e) {
-        const square = $(this).data('square');
-        if (!tapSource) {
-          tapSource = square;
-          $(this).addClass('highlight');
-        } else {
-          let pos = board.position();
-          if (tapSource !== square && pos[tapSource]) {
-            moveHistory.push(Chessboard.objToFen(pos));
-            pos[square] = pos[tapSource];
-            delete pos[tapSource];
-            board.position(pos, true); // no animation if false
-          }
-          $('[data-square]').removeClass('highlight');
-          tapSource = null;
-        }
-      });
+
+
+// Promotion dialog handler
+$(function() {
+  $('.promote-btn').on('click', function() {
+    if (!pendingPromotion) return;
+    let pos = board.position();
+    let promoteTo = $(this).data('piece').toUpperCase();
+    let color = pendingPromotion.color;
+    pos[pendingPromotion.to] = color + promoteTo;
+    delete pos[pendingPromotion.from];
+    moveHistory.push(Chessboard.objToFen(pos));
+    board.position(pos, true);
+    highlightLastMove(pendingPromotion.from, pendingPromotion.to);
+    $('#promotion-dialog').hide();
+    pendingPromotion = null;
+  });
+});
+
+
+// Close button for promotion dialog
+$('#close-promotion-dialog').on('click', function() {
+  $('#promotion-dialog').hide();
+  pendingPromotion = null;
+});
     
 
 
     document.getElementById('flipBtn').onclick = function() {
       board.flip();
+      if (lastMoveSquares.length === 2) {
+    highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
     };
+
 
     document.getElementById('undoBtn').onclick = function() {
       if (moveHistory.length > 0) {
         var prevFen = moveHistory.pop();
         board.position(prevFen);
+        $('.square-55d63').removeClass('last-move');
       }
     };
 
@@ -229,8 +311,17 @@
     document.getElementById('board').addEventListener('touchmove', function(e) {
       e.preventDefault();
     }, { passive: false });
+
+
   
+
+
+
+
+
 </script>
+
+
 
 
 
