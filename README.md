@@ -1,7 +1,7 @@
 Version 1.1 23/6/25
 
-1. added show last move highlight
-2. added promotion handling
+1. added show last move highlight (html)
+2. added promotion handling (html)
 
 
 Version 1.0:
