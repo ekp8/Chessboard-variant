@@ -10,22 +10,25 @@
   <!-- <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/css/chessboard-1.0.0.min.css" /> -->
 
   <style>
-   #board {
-    width: 600px; /* 10 columns × 50px per square standard */
+     #board {
+    width: 600px;
     margin: 20px auto;
-}
-
-  #flipBtn {
-    
-    display: block;
-    margin: 20px auto 0 auto; /* center below the board */
-    position: static; /* remove absolute positioning */
-
     }
-
+  .button-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* space between buttons */
+    margin-top: 20px;
+    }
+  #flipBtn, #undoBtn {
+    min-width: 100px;
+    height: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    }
   body {
     position: relative;
-  }
+   }
     
   </style>
 
@@ -46,19 +49,44 @@
 
 
 
+  <div class="button-row">
+    <button id="flipBtn">Flip Board</button>
+    <button id="undoBtn">Undo</button>
+  </div>
   
-  <button id="flipBtn">Flip Board</button>
+
   <script>
+     // ...existing code...
+    var moveHistory = [];
     var board = Chessboard('board', {
       position: 'start',
       draggable: true,
       dropOffBoard: 'snapback',
-      sparePieces: false
+      sparePieces: false,
+      onDrop: function(source, target, piece, newPos, oldPos, orientation) {
+        // Save the old position before the move
+        moveHistory.push(Chessboard.objToFen(oldPos));
+        // Allow all moves (or add your own validation here)
+        return true;
+      }
     });
 
     document.getElementById('flipBtn').onclick = function() {
       board.flip();
     };
+
+    document.getElementById('undoBtn').onclick = function() {
+      if (moveHistory.length > 0) {
+        var prevFen = moveHistory.pop();
+        board.position(prevFen);
+      }
+    };
+    // ...existing code...
+  
 </script>
+
+
+
+
 </body>
 </html>
