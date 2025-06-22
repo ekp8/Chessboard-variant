@@ -10,6 +10,14 @@
   <!-- <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/css/chessboard-1.0.0.min.css" /> -->
 
   <style>
+
+    body, html {
+      overscroll-behavior: contain;
+      /* or try: overscroll-behavior-y: contain; */
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
      #board {
     width: 850px;
     margin: 20px auto;
@@ -32,6 +40,14 @@
     position: relative;
    }
     
+   .square-55d63.highlight {
+  box-shadow: 0 0 0 3px #f6c23e inset;
+}
+
+  .square-55d63 img {
+    pointer-events: none;
+  }
+
   </style>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -58,6 +74,11 @@
 
 
   <script>
+
+    function isTouchDevice() {
+      return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      }
+
      // ...existing code...
     var moveHistory = [];
     var board = Chessboard('board', {
@@ -72,6 +93,49 @@
         return true;
       }
     });
+
+  
+    let tapSource = null;
+
+    $('#board').on('pointerup', '[data-square]', function(e) {
+      // Only handle left mouse button or touch
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      // If a drag just happened, ignore this tap
+      if (window._justDragged) {
+        window._justDragged = false;
+        return;
+      }
+
+      const square = $(this).data('square');
+      if (!tapSource) {
+        tapSource = square;
+        $(this).addClass('highlight');
+      } else {
+        let pos = board.position();
+        if (tapSource !== square && pos[tapSource]) {
+          moveHistory.push(Chessboard.objToFen(pos));
+          pos[square] = pos[tapSource];
+          delete pos[tapSource];
+          board.position(pos);
+        }
+        $('[data-square]').removeClass('highlight');
+        tapSource = null;
+      }
+    });
+
+    // Mark when a drag happens
+    $('#board').on('mousedown touchstart', '[data-square]', function() {
+      window._dragStartTime = Date.now();
+    });
+    $('#board').on('mouseup touchend', '[data-square]', function() {
+      if (window._dragStartTime && Date.now() - window._dragStartTime > 200) {
+        window._justDragged = true;
+      }
+      window._dragStartTime = null;
+    });
+
+
 
     document.getElementById('flipBtn').onclick = function() {
       board.flip();
