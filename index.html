@@ -11,15 +11,16 @@
 
   <style>
    #board {
-    width: 500px; /* 10 columns × 50px per square */
+    width: 600px; /* 10 columns × 50px per square standard */
     margin: 20px auto;
 }
 
   #flipBtn {
-      position: absolute;
-      right: 40px;
-      top: 40px;
-      z-index: 10;
+    
+    display: block;
+    margin: 20px auto 0 auto; /* center below the board */
+    position: static; /* remove absolute positioning */
+
     }
 
   body {
@@ -27,6 +28,8 @@
   }
     
   </style>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
 
