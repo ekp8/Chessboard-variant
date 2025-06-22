@@ -13,6 +13,8 @@
      #board {
     width: 850px;
     margin: 20px auto;
+    touch-action: none;
+    -ms-touch-action: none;
     }
   .button-row {
     display: flex;
@@ -82,6 +84,11 @@
       }
     };
     // ...existing code...
+
+        // Prevent scrolling when touching the board
+    document.getElementById('board').addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
   
 </script>
 
