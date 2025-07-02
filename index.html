@@ -21,9 +21,9 @@
       padding: 0;
     }
      #board {
-    width: 750px;
-    height: 675px; /* 750 * 9 / 10 for 10x9 */
-    margin: 5px auto;
+    width: 800px;
+    height: 720px; /* 800 * 9 / 10 for 10x9 */
+    margin: 0px auto;
     touch-action: none;
     -ms-touch-action: none;
      display: flex;
@@ -34,7 +34,7 @@
     @media screen and (max-width: 768px) {
       #board {
         width: 90vw;
-        max-width: 600px;
+        max-width: 640px;
       }
     }
     
@@ -47,23 +47,17 @@
       height: 400px !important;
       z-index: 99999 !important;
       cursor: pointer !important;
-      background: red !important;
+      background: transparent !important;
       opacity: 1 !important;
       pointer-events: auto !important;
-      border: 3px solid blue !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      font-weight: bold !important;
-      color: white !important;
     }
     
     .flip-area-left {
-      left: calc(50% - 500px) !important;
+      left: calc(50% - 525px) !important;
     }
     
     .flip-area-right {
-      right: calc(50% - 500px) !important;
+      right: calc(50% - 525px) !important;
     }
 
     #board > div {
@@ -74,7 +68,7 @@
     display: flex;
     justify-content: center;
     gap: 10px; /* space between buttons */
-    margin-top: 5px;
+    margin-top: 0px;
     }
   #flipBtn, #undoBtn {
     min-width: 100px;
@@ -120,7 +114,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 10px 0;
+  margin: 5px 0;
   width: 100%;
 }
 @media (max-width: 600px) {
@@ -148,8 +142,8 @@
 <body>
 
   <!-- Clickable flip areas -->
-  <div class="flip-area flip-area-left" id="flipAreaLeft">LEFT</div>
-  <div class="flip-area flip-area-right" id="flipAreaRight">RIGHT</div>
+  <div class="flip-area flip-area-left" id="flipAreaLeft"></div>
+  <div class="flip-area flip-area-right" id="flipAreaRight"></div>
 
     <div class="mode-row">
     <label for="modeSelect"><b>Custom Mode:</b></label>
