@@ -38,41 +38,32 @@
       }
     }
     
-    /* Clickable flip areas */
+    /* Clickable flip areas - positioned next to the board */
     .flip-area {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      width: 80px;
-      z-index: 100;
-      cursor: pointer;
-      background: rgba(0,0,0,0.05);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    
-    .flip-area:hover, .flip-area:active {
-      opacity: 1;
-    }
-    
-    /* Show flip areas more prominently on touch devices */
-    @media (hover: none) {
-      .flip-area {
-        opacity: 0.4;
-        background: rgba(100,100,100,0.15);
-      }
-      .flip-area:active {
-        opacity: 0.8;
-        background: rgba(100,100,100,0.3);
-      }
+      position: absolute !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 100px !important;
+      height: 400px !important;
+      z-index: 99999 !important;
+      cursor: pointer !important;
+      background: red !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      border: 3px solid blue !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-weight: bold !important;
+      color: white !important;
     }
     
     .flip-area-left {
-      left: 0;
+      left: calc(50% - 500px) !important;
     }
     
     .flip-area-right {
-      right: 0;
+      right: calc(50% - 500px) !important;
     }
 
     #board > div {
@@ -157,8 +148,8 @@
 <body>
 
   <!-- Clickable flip areas -->
-  <div class="flip-area flip-area-left" id="flipAreaLeft"></div>
-  <div class="flip-area flip-area-right" id="flipAreaRight"></div>
+  <div class="flip-area flip-area-left" id="flipAreaLeft">LEFT</div>
+  <div class="flip-area flip-area-right" id="flipAreaRight">RIGHT</div>
 
     <div class="mode-row">
     <label for="modeSelect"><b>Custom Mode:</b></label>
@@ -344,6 +335,7 @@ $('#close-promotion-dialog').on('click', function() {
 
     // Add flip functionality to left and right areas
     document.getElementById('flipAreaLeft').onclick = function() {
+      console.log('Left flip area clicked!');
       board.flip();
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
@@ -351,6 +343,7 @@ $('#close-promotion-dialog').on('click', function() {
     };
     
     document.getElementById('flipAreaRight').onclick = function() {
+      console.log('Right flip area clicked!');
       board.flip();
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
@@ -359,6 +352,7 @@ $('#close-promotion-dialog').on('click', function() {
     
     // Add touch support for flip areas
     document.getElementById('flipAreaLeft').addEventListener('touchend', function(e) {
+      console.log('Left flip area touched!');
       e.preventDefault();
       board.flip();
       if (lastMoveSquares.length === 2) {
@@ -367,12 +361,17 @@ $('#close-promotion-dialog').on('click', function() {
     });
     
     document.getElementById('flipAreaRight').addEventListener('touchend', function(e) {
+      console.log('Right flip area touched!');
       e.preventDefault();
       board.flip();
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
       }
     });
+    
+    // Debug: Check if elements exist
+    console.log('flipAreaLeft element:', document.getElementById('flipAreaLeft'));
+    console.log('flipAreaRight element:', document.getElementById('flipAreaRight'));
 
 
     document.getElementById('undoBtn').onclick = function() {
