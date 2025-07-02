@@ -22,7 +22,7 @@
     }
      #board {
     width: 800px;
-    height: 720px; /* 800 * 9 / 10 for 10x9 */
+    height: 640px; /* 800 * 8 / 10 for 10x8 standard board */
     margin: 0px auto;
     touch-action: none;
     -ms-touch-action: none;
@@ -230,16 +230,19 @@
       }
     });
 
+    // Set initial board height to match the standard 10x8 layout
+    document.getElementById('board').style.height = '640px';
+
 
 // 9rows NOT IMPLEMENTED YET
    document.getElementById('modeSelect').addEventListener('change', function() {
   if (this.value === 'standard') {
     board.position('rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1', true);
-    document.getElementById('board').style.height = '600px'; // 750 * 8 / 10
+    document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === 'swapBN') {
     var swapBNFen = 'rbnlqkhnbr/pppppppppp/10/10/10/10/PPPPPPPPPP/RBNLQKHNBR w KQkq - 0 1';
     board.position(swapBNFen, true);
-    document.getElementById('board').style.height = '600px'; // 8 rows
+    document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === '9rows') {
     var nineRowsFen =
       'rnblqkhbnr/' +   // 9th row (black back row)
@@ -252,7 +255,7 @@
       'PPPPPPPPPP/' +   // 2nd row (white pawns)
       'RNBLQKHBNR w KQkq - 0 1'; // 1st row (white back row)
     board.position(nineRowsFen, true);
-    document.getElementById('board').style.height = '675px'; // 750 * 9 / 10
+    document.getElementById('board').style.height = '720px'; // 800 * 9 / 10
   }
 });
 
