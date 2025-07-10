@@ -1829,4 +1829,5 @@ var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
   // expose util functions
   window['Chessboard']['fenToObj'] = fenToObj
   window['Chessboard']['objToFen'] = objToFen
+  window['Chessboard']['validPositionObject'] = validPositionObject
 })() // end anonymous wrapper
