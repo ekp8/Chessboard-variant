@@ -412,7 +412,13 @@ $('#board').on('pointerup', '[data-square]', function(e) {
         // Debug: Check what makes the position invalid
         console.log('Validating position...');
         Object.keys(pos).forEach(function(sq) {
-          console.log('Square:', sq, 'Piece:', pos[sq], 'Valid square?', /^[a-j][1-8]$/.test(sq), 'Valid piece?', /^[bw][KQRNBSX]$/.test(pos[sq]));
+          var piece = pos[sq];
+          var validSquare = /^[a-j][1-8]$/.test(sq);
+          var validPiece = /^[bw][KQRNBPSX]$/.test(piece);
+          console.log('Square:', sq, 'Piece:', piece, 'Piece length:', piece ? piece.length : 'undefined', 'Valid square?', validSquare, 'Valid piece?', validPiece);
+          if (!validPiece && piece) {
+            console.log('Invalid piece details - First char:', piece[0], 'Second char:', piece[1], 'Piece code:', piece.charCodeAt ? Array.from(piece).map(c => c.charCodeAt(0)) : 'no charCodeAt');
+          }
         });
         
         var isValid = Chessboard.validPositionObject ? Chessboard.validPositionObject(pos) : 'validPositionObject not available';

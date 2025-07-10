@@ -215,7 +215,7 @@ var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
   }
 
   function validPieceCode (code) {
-    return isString(code) && code.search(/^[bw][KQRNBSX]$/) !== -1
+    return isString(code) && code.search(/^[bw][KQRNBPSX]$/) !== -1
   }
 
   if (RUN_ASSERTS) {
