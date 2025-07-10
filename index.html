@@ -356,8 +356,7 @@ $('#board').on('pointerup', '[data-square]', function(e) {
         delete pos[tapSource];
         console.log('New position:', pos);
         console.log('Setting board position...');
-        var result = board.position(pos, true); // Re-enable animation
-        console.log('Board position result:', result);
+        console.log('Board position result:', board.position(pos, true)); // Re-enable animation
         highlightLastMove(tapSource, square); // <-- show last move highlight
         // Update attack highlights after move
         if (attackTrainerActive) {
