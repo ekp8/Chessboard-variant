@@ -901,10 +901,9 @@ var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
     }
 
     function buildSparePiecesHTML (color) {
-      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'wH', 'wL']
+      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'wS', 'wX']
       if (color === 'black') {
-        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bH', 'bL'
-         ]
+        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bS', 'bX']
       }
 
       var html = ''
