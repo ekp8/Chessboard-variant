@@ -796,7 +796,7 @@ var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
       }
 
       // spare pieces
-      var pieces = 'KQRNBPLH'.split('')
+      var pieces = 'KQRNBSX'.split('')
       for (i = 0; i < pieces.length; i++) {
         var whitePiece = 'w' + pieces[i]
         var blackPiece = 'b' + pieces[i]
