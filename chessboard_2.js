@@ -20,7 +20,7 @@
   var ELLIPSIS = '…'
   var MINIMUM_JQUERY_VERSION = '1.8.3'
   var RUN_ASSERTS = false
-  var START_FEN = 'rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR'
+var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
   var START_POSITION = fenToObj(START_FEN)
     console.log('START_POSITION:', START_POSITION);
     Object.keys(START_POSITION).forEach(function(square) {
@@ -215,7 +215,7 @@
   }
 
   function validPieceCode (code) {
-    return isString(code) && code.search(/^[bw][KQRNBPLH]$/) !== -1
+    return isString(code) && code.search(/^[bw][KQRNBPSX]$/) !== -1
   }
 
   if (RUN_ASSERTS) {
@@ -248,7 +248,7 @@
     // check each section
     for (var i = 0; i < 8; i++) {
       if (chunks[i].length !== 10 ||
-          chunks[i].search(/[^kqrnbplhKQRNBPLH1]/) !== -1) {
+          chunks[i].search(/[^kqrnbpsxKQRNBPSX1]/) !== -1) {
         return false
       }
     }
@@ -796,7 +796,7 @@
       }
 
       // spare pieces
-      var pieces = 'KQRNBPLH'.split('')
+      var pieces = 'KQRNBSX'.split('')
       for (i = 0; i < pieces.length; i++) {
         var whitePiece = 'w' + pieces[i]
         var blackPiece = 'b' + pieces[i]
@@ -901,10 +901,9 @@
     }
 
     function buildSparePiecesHTML (color) {
-      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'wH', 'wL']
+      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'wS', 'wX']
       if (color === 'black') {
-        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bH', 'bL'
-         ]
+        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bS', 'bX']
       }
 
       var html = ''
@@ -1830,4 +1829,5 @@
   // expose util functions
   window['Chessboard']['fenToObj'] = fenToObj
   window['Chessboard']['objToFen'] = objToFen
+  window['Chessboard']['validPositionObject'] = validPositionObject
 })() // end anonymous wrapper

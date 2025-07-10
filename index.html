@@ -20,6 +20,9 @@
       margin: 0;
       padding: 0;
     }
+    
+
+    
      #board {
     width: 800px;
     height: 640px; /* 800 * 8 / 10 for 10x8 standard board */
@@ -144,6 +147,8 @@
 </head>
 <body>
 
+
+
   <!-- Clickable flip areas -->
   <div class="flip-area flip-area-left" id="flipAreaLeft"></div>
   <div class="flip-area flip-area-right" id="flipAreaRight"></div>
@@ -169,8 +174,8 @@
     <button class="promote-btn" data-piece="r">Rook</button>
     <button class="promote-btn" data-piece="b">Bishop</button>
     <button class="promote-btn" data-piece="n">Knight</button>
-    <button class="promote-btn" data-piece="h">Sentinel</button>
-    <button class="promote-btn" data-piece="l">Berserker</button>
+    <button class="promote-btn" data-piece="s">Sentinel</button>
+    <button class="promote-btn" data-piece="x">Berserker</button>
   </div>
 </div>
 
@@ -193,6 +198,8 @@
 
 
   <script>
+
+
 
     function isTouchDevice() {
       return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -219,9 +226,9 @@
 
      // ...existing code...
     var moveHistory = [];
+    console.log('Initializing chessboard...');
     var board = Chessboard('board', {
-
-      position: 'rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1',
+      position: 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR w KQkq - 0 1',
       draggable: false, // <--- disables drag, enables click-to-move everywhere
       dropOffBoard: 'snapback',
       sparePieces: false,
@@ -233,6 +240,10 @@
       }
     });
 
+    console.log('Board initialized:', board);
+    console.log('Initial position:', board.position());
+    console.log('Initial FEN:', board.fen());
+
     // Set initial board height to match the standard 10x8 layout
     document.getElementById('board').style.height = '640px';
 
@@ -240,15 +251,15 @@
 // 9rows NOT IMPLEMENTED YET
    document.getElementById('modeSelect').addEventListener('change', function() {
   if (this.value === 'standard') {
-    board.position('rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1', true);
+    board.position('rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR w KQkq - 0 1', true);
     document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === 'swapBN') {
-    var swapBNFen = 'rbnlqkhnbr/pppppppppp/10/10/10/10/PPPPPPPPPP/RBNLQKHNBR w KQkq - 0 1';
+    var swapBNFen = 'rbnxqksnbr/pppppppppp/10/10/10/10/PPPPPPPPPP/RBNXQKSNBR w KQkq - 0 1';
     board.position(swapBNFen, true);
     document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === '9rows') {
     var nineRowsFen =
-      'rnblqkhbnr/' +   // 9th row (black back row)
+      'rnbxqksbnr/' +   // 9th row (black back row)
       'pppppppppp/' +   // 8th row (black pawns)
       '10/' +           // 7th row (empty)
       '10/' +           // 6th row (empty)
@@ -256,7 +267,7 @@
       '10/' +           // 4th row (empty)
       '10/' +           // 3rd row (empty)
       'PPPPPPPPPP/' +   // 2nd row (white pawns)
-      'RNBLQKHBNR w KQkq - 0 1'; // 1st row (white back row)
+      'RNBXQKSBNR w KQkq - 0 1'; // 1st row (white back row)
     board.position(nineRowsFen, true);
     document.getElementById('board').style.height = '720px'; // 800 * 9 / 10
   }
@@ -267,30 +278,47 @@
 // tap to move handler 
 $('#board').on('pointerup', '[data-square]', function(e) {
   const square = $(this).data('square');
+  console.log('Tap on square:', square);
   if (!tapSource) {
     // Remove previous highlights before highlighting the new tap
     $('[data-square]').removeClass('highlight');
     tapSource = square;
     $(this).addClass('highlight');
+    console.log('Selected source square:', tapSource);
   } else {
     let pos = board.position();
+    console.log('Current position:', pos);
+    console.log('Attempting move from', tapSource, 'to', square);
+    
     if (tapSource !== square && pos[tapSource]) {
       // Check for pawn promotion
       let piece = pos[tapSource];
+      console.log('Moving piece:', piece);
       let isWhite = piece && piece[0] === 'w';
       let isBlack = piece && piece[0] === 'b';
       let isPawn = piece && piece[1] === 'P';
       let promoteRank = (isWhite && square.match(/8|9/)) || (isBlack && square.match(/1/));
       if (isPawn && promoteRank) {
+        console.log('Pawn promotion detected');
         pendingPromotion = { from: tapSource, to: square, color: piece[0] };
         $('#promotion-dialog').css('display', 'flex');
       } else {
+        console.log('Executing normal move');
         moveHistory.push(Chessboard.objToFen(pos));
         pos[square] = pos[tapSource];
         delete pos[tapSource];
-        board.position(pos, true);
+        console.log('New position:', pos);
+        console.log('Setting board position...');
+        console.log('Board position result:', board.position(pos, true)); // Re-enable animation
         highlightLastMove(tapSource, square); // <-- show last move highlight
       }
+    } else {
+      console.log('Move conditions not met:', {
+        'tapSource !== square': tapSource !== square,
+        'pos[tapSource] exists': !!pos[tapSource],
+        'tapSource': tapSource,
+        'square': square
+      });
     }
     // Always remove yellow highlight after a move attempt
     $('[data-square]').removeClass('highlight');
@@ -310,7 +338,7 @@ $(function() {
     pos[pendingPromotion.to] = color + promoteTo;
     delete pos[pendingPromotion.from];
     moveHistory.push(Chessboard.objToFen(pos));
-    board.position(pos, true);
+    board.position(pos, true); // Re-enable animation
     highlightLastMove(pendingPromotion.from, pendingPromotion.to);
     $('#promotion-dialog').hide();
     pendingPromotion = null;
