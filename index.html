@@ -169,8 +169,8 @@
     <button class="promote-btn" data-piece="r">Rook</button>
     <button class="promote-btn" data-piece="b">Bishop</button>
     <button class="promote-btn" data-piece="n">Knight</button>
-    <button class="promote-btn" data-piece="h">Sentinel</button>
-    <button class="promote-btn" data-piece="l">Berserker</button>
+    <button class="promote-btn" data-piece="s">Sentinel</button>
+    <button class="promote-btn" data-piece="x">Berserker</button>
   </div>
 </div>
 
@@ -220,8 +220,7 @@
      // ...existing code...
     var moveHistory = [];
     var board = Chessboard('board', {
-
-      position: 'rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1',
+      position: 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR w KQkq - 0 1',
       draggable: false, // <--- disables drag, enables click-to-move everywhere
       dropOffBoard: 'snapback',
       sparePieces: false,
@@ -240,15 +239,15 @@
 // 9rows NOT IMPLEMENTED YET
    document.getElementById('modeSelect').addEventListener('change', function() {
   if (this.value === 'standard') {
-    board.position('rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR w KQkq - 0 1', true);
+    board.position('rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR w KQkq - 0 1', true);
     document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === 'swapBN') {
-    var swapBNFen = 'rbnlqkhnbr/pppppppppp/10/10/10/10/PPPPPPPPPP/RBNLQKHNBR w KQkq - 0 1';
+    var swapBNFen = 'rbnxqksnbr/pppppppppp/10/10/10/10/PPPPPPPPPP/RBNXQKSNBR w KQkq - 0 1';
     board.position(swapBNFen, true);
     document.getElementById('board').style.height = '640px'; // 800 * 8 / 10
   } else if (this.value === '9rows') {
     var nineRowsFen =
-      'rnblqkhbnr/' +   // 9th row (black back row)
+      'rnbxqksbnr/' +   // 9th row (black back row)
       'pppppppppp/' +   // 8th row (black pawns)
       '10/' +           // 7th row (empty)
       '10/' +           // 6th row (empty)
@@ -256,7 +255,7 @@
       '10/' +           // 4th row (empty)
       '10/' +           // 3rd row (empty)
       'PPPPPPPPPP/' +   // 2nd row (white pawns)
-      'RNBLQKHBNR w KQkq - 0 1'; // 1st row (white back row)
+      'RNBXQKSBNR w KQkq - 0 1'; // 1st row (white back row)
     board.position(nineRowsFen, true);
     document.getElementById('board').style.height = '720px'; // 800 * 9 / 10
   }

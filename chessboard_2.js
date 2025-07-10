@@ -20,7 +20,7 @@
   var ELLIPSIS = '…'
   var MINIMUM_JQUERY_VERSION = '1.8.3'
   var RUN_ASSERTS = false
-  var START_FEN = 'rnblqkhbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBLQKHBNR'
+var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
   var START_POSITION = fenToObj(START_FEN)
     console.log('START_POSITION:', START_POSITION);
     Object.keys(START_POSITION).forEach(function(square) {
@@ -215,7 +215,7 @@
   }
 
   function validPieceCode (code) {
-    return isString(code) && code.search(/^[bw][KQRNBPLH]$/) !== -1
+    return isString(code) && code.search(/^[bw][KQRNBSX]$/) !== -1
   }
 
   if (RUN_ASSERTS) {
