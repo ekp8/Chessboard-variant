@@ -113,8 +113,8 @@
 }
 
 /* Ensure yellow highlight overrides attack highlights when both are present */
-.square-55d63.highlight.attacked-by-white,
-.square-55d63.highlight.attacked-by-black {
+.square-55d63.highlight.attacking-pieces,
+.square-55d63.highlight.attacked-pieces {
   box-shadow: 0 0 0 3px #f6c23e inset !important;
 }
 
@@ -170,12 +170,12 @@
 } /*highlights last move*/
 
 /* Attack trainer highlighting */
-.square-55d63.attacked-by-white {
-  box-shadow: 0 0 0 3px #a8d5a8 inset !important; /* Stronger soft green */
+.square-55d63.attacking-pieces {
+  box-shadow: 0 0 0 3px #a8d5a8 inset !important; /* Green - pieces attacked by "your" side */
 } 
 
-.square-55d63.attacked-by-black {
-  box-shadow: 0 0 0 3px #e6a8a8 inset !important; /* Stronger soft pink */
+.square-55d63.attacked-pieces {
+  box-shadow: 0 0 0 3px #e6a8a8 inset !important; /* Pink - pieces attacked by "opponent" side */
 }
 
 /* Button styling for attack trainer */
@@ -405,67 +405,44 @@ $('#close-promotion-dialog').on('click', function() {
     
 
 
-    document.getElementById('flipBtn').onclick = function() {
+    // Centralized flip function to ensure consistent state management
+    function flipBoard() {
       board.flip();
       boardFlipped = !boardFlipped; // Toggle board orientation tracking
+      console.log('Board flipped! boardFlipped is now:', boardFlipped);
       if (lastMoveSquares.length === 2) {
-    highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+        highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
       }
       if (attackTrainerActive) {
+        console.log('Attack trainer is active, calling highlightAttacks()');
         setTimeout(() => highlightAttacks(), 100);
       }
-    };
+    }
+
+    document.getElementById('flipBtn').onclick = flipBoard;
 
     // Add flip functionality to left and right areas
     document.getElementById('flipAreaLeft').onclick = function() {
       console.log('Left flip area clicked!');
-      board.flip();
-      boardFlipped = !boardFlipped; // Toggle board orientation tracking
-      if (lastMoveSquares.length === 2) {
-        highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
-      }
-      if (attackTrainerActive) {
-        setTimeout(() => highlightAttacks(), 100);
-      }
+      flipBoard();
     };
     
     document.getElementById('flipAreaRight').onclick = function() {
       console.log('Right flip area clicked!');
-      board.flip();
-      boardFlipped = !boardFlipped; // Toggle board orientation tracking
-      if (lastMoveSquares.length === 2) {
-        highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
-      }
-      if (attackTrainerActive) {
-        setTimeout(() => highlightAttacks(), 100);
-      }
+      flipBoard();
     };
     
     // Add touch support for flip areas
     document.getElementById('flipAreaLeft').addEventListener('touchend', function(e) {
       console.log('Left flip area touched!');
       e.preventDefault();
-      board.flip();
-      boardFlipped = !boardFlipped; // Toggle board orientation tracking
-      if (lastMoveSquares.length === 2) {
-        highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
-      }
-      if (attackTrainerActive) {
-        setTimeout(() => highlightAttacks(), 100);
-      }
+      flipBoard();
     });
     
     document.getElementById('flipAreaRight').addEventListener('touchend', function(e) {
       console.log('Right flip area touched!');
       e.preventDefault();
-      board.flip();
-      boardFlipped = !boardFlipped; // Toggle board orientation tracking
-      if (lastMoveSquares.length === 2) {
-        highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
-      }
-      if (attackTrainerActive) {
-        setTimeout(() => highlightAttacks(), 100);
-      }
+      flipBoard();
     });
     
     // Debug: Check if elements exist
@@ -511,7 +488,7 @@ $('#close-promotion-dialog').on('click', function() {
 
     function highlightAttacks() {
       // Clear previous attack highlights
-      $('.square-55d63').removeClass('attacked-by-white attacked-by-black attacked-by-both');
+      $('.square-55d63').removeClass('attacking-pieces attacked-pieces');
 
       if (!attackTrainerActive) return;
 
@@ -525,45 +502,47 @@ $('#close-promotion-dialog').on('click', function() {
       
       const { whiteAttacks, blackAttacks } = attackCalculator.calculateAllAttacks(position, lastMove);
 
+      console.log('highlightAttacks called with boardFlipped:', boardFlipped);
+      console.log('White attacks:', Array.from(whiteAttacks));
+      console.log('Black attacks:', Array.from(blackAttacks));
+
       // Color logic based on board orientation:
-      // When not flipped: Green = white attacks, Pink = black attacks
-      // When flipped: Green = black attacks, Pink = white attacks
-      // This creates an "attacking/attacked-by" perspective from current viewpoint
+      // Green = attacks from "your" side (bottom)
+      // Pink = attacks from "opponent" side (top)
       
-      const attackingColor = boardFlipped ? 'attacked-by-black' : 'attacked-by-white';
-      const attackedByColor = boardFlipped ? 'attacked-by-white' : 'attacked-by-black';
-      
-      // Apply "attacking" color (green) to pieces being attacked by the "bottom" side
+      // Apply colors based on perspective
       if (boardFlipped) {
-        // When flipped, black is on bottom, so black attacks get green
+        // When flipped, black is on bottom (your side), white is on top (opponent)
         blackAttacks.forEach(square => {
           const piece = position[square];
           if (piece && piece[0] === 'w') { // Black attacking a white piece
-            $(`[data-square="${square}"]`).addClass(attackingColor);
+            console.log('Adding GREEN to white piece at', square, 'attacked by black (your side)');
+            $(`[data-square="${square}"]`).addClass('attacking-pieces');
           }
         });
         
-        // White attacks get pink
         whiteAttacks.forEach(square => {
           const piece = position[square];
           if (piece && piece[0] === 'b') { // White attacking a black piece
-            $(`[data-square="${square}"]`).addClass(attackedByColor);
+            console.log('Adding PINK to black piece at', square, 'attacked by white (opponent)');
+            $(`[data-square="${square}"]`).addClass('attacked-pieces');
           }
         });
       } else {
-        // When not flipped, white is on bottom, so white attacks get green
+        // When not flipped, white is on bottom (your side), black is on top (opponent)
         whiteAttacks.forEach(square => {
           const piece = position[square];
           if (piece && piece[0] === 'b') { // White attacking a black piece
-            $(`[data-square="${square}"]`).addClass(attackingColor);
+            console.log('Adding GREEN to black piece at', square, 'attacked by white (your side)');
+            $(`[data-square="${square}"]`).addClass('attacking-pieces');
           }
         });
         
-        // Black attacks get pink
         blackAttacks.forEach(square => {
           const piece = position[square];
           if (piece && piece[0] === 'w') { // Black attacking a white piece
-            $(`[data-square="${square}"]`).addClass(attackedByColor);
+            console.log('Adding PINK to white piece at', square, 'attacked by black (opponent)');
+            $(`[data-square="${square}"]`).addClass('attacked-pieces');
           }
         });
       }
@@ -580,21 +559,11 @@ $('#close-promotion-dialog').on('click', function() {
       } else {
         btn.classList.remove('active');
         btn.textContent = 'Attack Trainer';
-        $('.square-55d63').removeClass('attacked-by-white attacked-by-black attacked-by-both');
+        $('.square-55d63').removeClass('attacking-pieces attacked-pieces');
       }
     };
 
-    // Modify the flip button to update attack highlights and track board orientation
-    const originalFlipHandler = document.getElementById('flipBtn').onclick;
-    document.getElementById('flipBtn').onclick = function() {
-      originalFlipHandler.call(this);
-      // Toggle the board orientation tracking
-      boardFlipped = !boardFlipped;
-      // Re-highlight attacks after flip to maintain proper perspective
-      if (attackTrainerActive) {
-        setTimeout(() => highlightAttacks(), 100);
-      }
-    };
+    // The flip button handler is already set up above with the centralized flipBoard() function
 
 
 
