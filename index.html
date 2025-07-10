@@ -410,7 +410,7 @@ $('#board').on('pointerup', '[data-square]', function(e) {
         delete pos[tapSource];
         console.log('New position:', pos);
         console.log('Setting board position...');
-        var result = board.position(pos, false); // Disable animation to prevent weird flying pieces
+        var result = board.position(pos, true); // Re-enable animation
         console.log('Board position result:', result);
         highlightLastMove(tapSource, square); // <-- show last move highlight
       }
@@ -440,7 +440,7 @@ $(function() {
     pos[pendingPromotion.to] = color + promoteTo;
     delete pos[pendingPromotion.from];
     moveHistory.push(Chessboard.objToFen(pos));
-    board.position(pos, false); // Disable animation to prevent weird flying pieces
+    board.position(pos, true); // Re-enable animation
     highlightLastMove(pendingPromotion.from, pendingPromotion.to);
     $('#promotion-dialog').hide();
     pendingPromotion = null;
