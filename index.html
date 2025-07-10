@@ -21,57 +21,7 @@
       padding: 0;
     }
     
-    /* Debug panel for mobile debugging */
-    #debugPanel {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      width: 300px;
-      max-height: 200px;
-      background: rgba(0, 0, 0, 0.9);
-      color: #00ff00;
-      font-family: monospace;
-      font-size: 12px;
-      padding: 10px;
-      border-radius: 5px;
-      z-index: 10000;
-      overflow-y: auto;
-      display: none;
-    }
-    
-    #debugPanel.show {
-      display: block;
-    }
-    
-    .debug-line {
-      margin: 2px 0;
-      word-wrap: break-word;
-    }
-    
-    .debug-error {
-      color: #ff4444;
-    }
-    
-    .debug-warn {
-      color: #ffaa00;
-    }
-    
-    .debug-info {
-      color: #4444ff;
-    }
-    
-    #debugToggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #333;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      z-index: 10001;
-      cursor: pointer;
-    }
+
     
      #board {
     width: 800px;
@@ -197,14 +147,7 @@
 </head>
 <body>
 
-  <!-- Debug panel for mobile debugging -->
-  <button id="debugToggle" onclick="toggleDebugPanel()">Debug</button>
-  <div id="debugPanel">
-    <div style="text-align: right; margin-bottom: 5px;">
-      <button onclick="clearDebugPanel()" style="background: #666; color: white; border: none; padding: 2px 6px; font-size: 10px;">Clear</button>
-    </div>
-    <div id="debugOutput"></div>
-  </div>
+
 
   <!-- Clickable flip areas -->
   <div class="flip-area flip-area-left" id="flipAreaLeft"></div>
@@ -256,51 +199,7 @@
 
   <script>
 
-    // Mobile Debug Panel Functions
-    function toggleDebugPanel() {
-      const panel = document.getElementById('debugPanel');
-      panel.classList.toggle('show');
-    }
-    
-    function clearDebugPanel() {
-      document.getElementById('debugOutput').innerHTML = '';
-    }
-    
-    function addDebugLine(message, type = 'info') {
-      const output = document.getElementById('debugOutput');
-      const line = document.createElement('div');
-      line.className = `debug-line debug-${type}`;
-      line.textContent = new Date().toLocaleTimeString() + ': ' + message;
-      output.appendChild(line);
-      output.scrollTop = output.scrollHeight;
-      
-      // Keep only last 20 lines
-      while (output.children.length > 20) {
-        output.removeChild(output.firstChild);
-      }
-    }
-    
-    // Override console methods to also show in debug panel
-    const originalConsole = {
-      log: console.log,
-      warn: console.warn,
-      error: console.error
-    };
-    
-    console.log = function(...args) {
-      originalConsole.log.apply(console, args);
-      addDebugLine(args.join(' '), 'info');
-    };
-    
-    console.warn = function(...args) {
-      originalConsole.warn.apply(console, args);
-      addDebugLine(args.join(' '), 'warn');
-    };
-    
-    console.error = function(...args) {
-      originalConsole.error.apply(console, args);
-      addDebugLine(args.join(' '), 'error');
-    };
+
 
     function isTouchDevice() {
       return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
