@@ -408,7 +408,15 @@ $('#board').on('pointerup', '[data-square]', function(e) {
         pos[square] = pos[tapSource];
         delete pos[tapSource];
         console.log('New position:', pos);
-        console.log('New position is valid:', Chessboard.validPositionObject ? Chessboard.validPositionObject(pos) : 'validPositionObject not available');
+        
+        // Debug: Check what makes the position invalid
+        console.log('Validating position...');
+        Object.keys(pos).forEach(function(sq) {
+          console.log('Square:', sq, 'Piece:', pos[sq], 'Valid square?', /^[a-j][1-8]$/.test(sq), 'Valid piece?', /^[bw][KQRNBSX]$/.test(pos[sq]));
+        });
+        
+        var isValid = Chessboard.validPositionObject ? Chessboard.validPositionObject(pos) : 'validPositionObject not available';
+        console.log('New position is valid:', isValid);
         console.log('Setting board position...');
         var result = board.position(pos, true);
         console.log('Board position result:', result);
