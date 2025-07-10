@@ -76,18 +76,46 @@
     gap: 10px; /* space between buttons */
     margin-top: 0px;
     }
-  #flipBtn, #undoBtn {
+  #flipBtn, #undoBtn, #twoPlayerBtn, #attackTrainerBtn {
     min-width: 100px;
     height: 40px;
     font-size: 1rem;
     cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
     }
+    
+  /* Button hover and active states */
+  #flipBtn:hover, #undoBtn:hover, #twoPlayerBtn:hover, #attackTrainerBtn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+  }
+  
+  #flipBtn:active, #undoBtn:active {
+    background-color: #dee2e6;
+    transform: translateY(1px);
+  }
+  
+  /* Two Player button active state */
+  #board.two-player #twoPlayerBtn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-color: #90caf9;
+  }
   body {
     position: relative;
    }
     
    .square-55d63.highlight {
-  box-shadow: 0 0 0 3px #f6c23e inset;
+  box-shadow: 0 0 0 3px #f6c23e inset !important;
+}
+
+/* Ensure yellow highlight overrides attack highlights when both are present */
+.square-55d63.highlight.attacked-by-white,
+.square-55d63.highlight.attacked-by-black {
+  box-shadow: 0 0 0 3px #f6c23e inset !important;
 }
 
   .square-55d63 img {
@@ -138,8 +166,23 @@
 
 
 .square-55d63.last-move {
-  box-shadow: 0 0 0 3px #c5a8c0 inset !important;
+  box-shadow: 0 0 0 3px #b0c4de inset !important; /* Soft light steel blue */
 } /*highlights last move*/
+
+/* Attack trainer highlighting */
+.square-55d63.attacked-by-white {
+  box-shadow: 0 0 0 3px #a8d5a8 inset !important; /* Stronger soft green */
+} 
+
+.square-55d63.attacked-by-black {
+  box-shadow: 0 0 0 3px #e6a8a8 inset !important; /* Stronger soft pink */
+}
+
+/* Button styling for attack trainer */
+#attackTrainerBtn.active {
+  background-color: #a8d5a8;
+  color: #2d5a2d;
+}
 
   </style>
 
@@ -187,6 +230,9 @@
   <!-- or use CDN -->
   <!-- <script src="https://unpkg.com/chessboardjs@1.0.0/js/chessboard-1.0.0.min.js"></script> -->
 
+  <!-- Load attack logic -->
+  <script src="attack-logic.js"></script>
+
 
 
 
@@ -194,6 +240,7 @@
     <button id="flipBtn">Flip Board</button>
     <button id="undoBtn">Undo</button>
     <button id="twoPlayerBtn">Two Player</button>
+    <button id="attackTrainerBtn">Trainer</button>
   </div>
 
 
@@ -312,6 +359,10 @@ $('#board').on('pointerup', '[data-square]', function(e) {
         var result = board.position(pos, true); // Re-enable animation
         console.log('Board position result:', result);
         highlightLastMove(tapSource, square); // <-- show last move highlight
+        // Update attack highlights after move
+        if (attackTrainerActive) {
+          setTimeout(() => highlightAttacks(), 100);
+        }
       }
     } else {
       console.log('Move conditions not met:', {
@@ -357,8 +408,12 @@ $('#close-promotion-dialog').on('click', function() {
 
     document.getElementById('flipBtn').onclick = function() {
       board.flip();
+      boardFlipped = !boardFlipped; // Toggle board orientation tracking
       if (lastMoveSquares.length === 2) {
     highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
       }
     };
 
@@ -366,16 +421,24 @@ $('#close-promotion-dialog').on('click', function() {
     document.getElementById('flipAreaLeft').onclick = function() {
       console.log('Left flip area clicked!');
       board.flip();
+      boardFlipped = !boardFlipped; // Toggle board orientation tracking
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
       }
     };
     
     document.getElementById('flipAreaRight').onclick = function() {
       console.log('Right flip area clicked!');
       board.flip();
+      boardFlipped = !boardFlipped; // Toggle board orientation tracking
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
       }
     };
     
@@ -384,8 +447,12 @@ $('#close-promotion-dialog').on('click', function() {
       console.log('Left flip area touched!');
       e.preventDefault();
       board.flip();
+      boardFlipped = !boardFlipped; // Toggle board orientation tracking
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
       }
     });
     
@@ -393,8 +460,12 @@ $('#close-promotion-dialog').on('click', function() {
       console.log('Right flip area touched!');
       e.preventDefault();
       board.flip();
+      boardFlipped = !boardFlipped; // Toggle board orientation tracking
       if (lastMoveSquares.length === 2) {
         highlightLastMove(lastMoveSquares[0], lastMoveSquares[1]);
+      }
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
       }
     });
     
@@ -408,6 +479,12 @@ $('#close-promotion-dialog').on('click', function() {
         var prevFen = moveHistory.pop();
         board.position(prevFen);
         $('.square-55d63').removeClass('last-move');
+        // Clear last move squares since we undid the move
+        lastMoveSquares = [];
+        // Update attack highlights after undo
+        if (attackTrainerActive) {
+          setTimeout(() => highlightAttacks(), 100);
+        }
       }
     };
 
@@ -428,7 +505,101 @@ $('#close-promotion-dialog').on('click', function() {
 
 
 
-</script>
+// Attack trainer functionality
+    let attackTrainerActive = false;
+    let boardFlipped = false; // Track board orientation for color swapping
+    let attackCalculator = new AttackCalculator();
+
+    function highlightAttacks() {
+      // Clear previous attack highlights
+      $('.square-55d63').removeClass('attacked-by-white attacked-by-black attacked-by-both');
+
+      if (!attackTrainerActive) return;
+
+      const position = board.position();
+      
+      // Prepare last move information for en passant
+      const lastMove = lastMoveSquares.length === 2 ? {
+        from: lastMoveSquares[0],
+        to: lastMoveSquares[1]
+      } : null;
+      
+      const { whiteAttacks, blackAttacks } = attackCalculator.calculateAllAttacks(position, lastMove);
+
+      // Color logic based on board orientation:
+      // When not flipped: Green = white attacks, Pink = black attacks
+      // When flipped: Green = black attacks, Pink = white attacks
+      // This creates an "attacking/attacked-by" perspective from current viewpoint
+      
+      const attackingColor = boardFlipped ? 'attacked-by-black' : 'attacked-by-white';
+      const attackedByColor = boardFlipped ? 'attacked-by-white' : 'attacked-by-black';
+      
+      // Apply "attacking" color (green) to pieces being attacked by the "bottom" side
+      if (boardFlipped) {
+        // When flipped, black is on bottom, so black attacks get green
+        blackAttacks.forEach(square => {
+          const piece = position[square];
+          if (piece && piece[0] === 'w') { // Black attacking a white piece
+            $(`[data-square="${square}"]`).addClass(attackingColor);
+          }
+        });
+        
+        // White attacks get pink
+        whiteAttacks.forEach(square => {
+          const piece = position[square];
+          if (piece && piece[0] === 'b') { // White attacking a black piece
+            $(`[data-square="${square}"]`).addClass(attackedByColor);
+          }
+        });
+      } else {
+        // When not flipped, white is on bottom, so white attacks get green
+        whiteAttacks.forEach(square => {
+          const piece = position[square];
+          if (piece && piece[0] === 'b') { // White attacking a black piece
+            $(`[data-square="${square}"]`).addClass(attackingColor);
+          }
+        });
+        
+        // Black attacks get pink
+        blackAttacks.forEach(square => {
+          const piece = position[square];
+          if (piece && piece[0] === 'w') { // Black attacking a white piece
+            $(`[data-square="${square}"]`).addClass(attackedByColor);
+          }
+        });
+      }
+    }
+
+    document.getElementById('attackTrainerBtn').onclick = function() {
+      attackTrainerActive = !attackTrainerActive;
+      const btn = document.getElementById('attackTrainerBtn');
+      
+      if (attackTrainerActive) {
+        btn.classList.add('active');
+        btn.textContent = 'Exit Trainer';
+        highlightAttacks();
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = 'Attack Trainer';
+        $('.square-55d63').removeClass('attacked-by-white attacked-by-black attacked-by-both');
+      }
+    };
+
+    // Modify the flip button to update attack highlights and track board orientation
+    const originalFlipHandler = document.getElementById('flipBtn').onclick;
+    document.getElementById('flipBtn').onclick = function() {
+      originalFlipHandler.call(this);
+      // Toggle the board orientation tracking
+      boardFlipped = !boardFlipped;
+      // Re-highlight attacks after flip to maintain proper perspective
+      if (attackTrainerActive) {
+        setTimeout(() => highlightAttacks(), 100);
+      }
+    };
+
+
+
+  </script>
 
 
 
