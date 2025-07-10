@@ -248,7 +248,7 @@ var START_FEN = 'rnbxqksbnr/pppppppppp/10/10/10/10/PPPPPPPPPP/RNBXQKSBNR'
     // check each section
     for (var i = 0; i < 8; i++) {
       if (chunks[i].length !== 10 ||
-          chunks[i].search(/[^kqrnbplhKQRNBPLH1]/) !== -1) {
+          chunks[i].search(/[^kqrnbpsxKQRNBPSX1]/) !== -1) {
         return false
       }
     }
